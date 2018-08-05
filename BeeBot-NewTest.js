@@ -46,8 +46,15 @@ function getTextLength(str) {
 
 var testtwnicktxt = File.read("/storage/emulated/0/BeeBot/testtwnick.txt");
 var testtwidtxt = File.read("/storage/emulated/0/BeeBot/testtwid.txt");
+var testtwlnicktxt = File.read("/storage/emulated/0/BeeBot/testtwlnick.txt");
+var testtwlidtxt = File.read("/storage/emulated/0/BeeBot/testtwlid.txt");
+var testtwlreplytxt = File.read("/storage/emulated/0/BeeBot/testtwlreply.txt");
+
 var testtwnicksplit = testtwnicktxt.split(" ");
 var testtwidsplit = testtwidtxt.split(" ");
+
+var senderNickarr = []
+var senderIdarr = []
 
 var blank = " ";
 var botOFF = false;
@@ -77,8 +84,12 @@ if(room == "앙 테스트4"){
   }
   if(id[0] == "/등록4"){
       if (senderNick != null && senderId != null) {
-          File.save("/storage/emulated/0/BeeBot/testtwnick.txt", blank + senderNick, true);
-          File.save("/storage/emulated/0/BeeBot/testtwid.txt", blank + senderId, true);
+        senderNickarr.push(senderNick);
+        senderIdarr.push(senderId);
+          File.save("/storage/emulated/0/BeeBot/testtwnick.txt", senderNickarr.join() + "," + blank, true);
+          File.save("/storage/emulated/0/BeeBot/testtwid.txt", senderIdarr.join() + "," + blank, true);
+          senderNickarr.pop();
+          senderIdarr.pop();
            replier.reply(senderNick+"님 꿀단지에 등록 완료!");
   }else if(senderNick != null && isEmpty(senderId) ){
       replier.reply("신속하게! 아이디를 적으라구!");
@@ -88,49 +99,32 @@ if(room == "앙 테스트4"){
 }
 
 if(id[0] == "/방송4"){
-  if(testtwnicksplit.indexOf(senderInfo[0].trim()) != -1){
-    File.save("/storage/emulated/0/BeeBot/testtwlnick.txt", blank + senderInfo[0].trim(). true);
-    File.save("/storage/emulated/0/BeeBot/testtwlid.txt", blank + testtwidsplit[testtwnicksplit.indexOf(senderInfo[0].trim())], true);
+  if(testtwnicktxt.split(", ").indexOf(senderInfo[0].trim()) != -1){
+    senderNickarr.push(senderInfo[0].trim());
+    senderIdarr.push(testtwidsplit[testtwnicksplit.indexOf(senderInfo[0].trim())]);
+    File.save("/storage/emulated/0/BeeBot/testtwlnick.txt", senderNickarr.join() + "," + blank, true);
+    File.save("/storage/emulated/0/BeeBot/testtwlid.txt", senderIdarr.join() + "," + blank, true);
+    File.save("/storage/emulated/0/BeeBot/testtwlreply.txt", "\n" + senderNickarr.join() + " 님\n링크: " + "twitch.tv/" + senderIdarr.join() + "," + blank, true);
+    senderNickarr.pop();
+    senderIdarr.pop();
     replier.reply("twitch.tv/" + testtwidsplit[testtwnicksplit.indexOf(senderInfo[0].trim())] + blank + id.slice(1).join(" "));
 }else{
     replier.reply("등록이 필요합니다.\n정찰대의 규율을 깔보지 마시길!\n방법: /등록 + 톡방 닉네임 + 트위치 ID");
 }
 }
 if(id[0] == "/방종4"){
-  if(testtwlnicksplit.indexOf(senderInfo[0].trim()) != -1){
-    var twlreplytxt = File.read("/storage/emulated/0/BeeBot/twlreply.txt");
-    var twlnicktxt = File.read("/storage/emulated/0/BeeBot/twlnick.txt");
-    var twlidtxt = File.read("/storage/emulated/0/BeeBot/twlid.txt");
-
-    var twlreplysplit = twlreplytxt.split(" ");
-    var twlnicksplit = twlnicktxt.split(" ");
-    var twlidsplit = twlidtxt.split(" ");
-
-    twlreplysplit.splice(twlnick.indexOf(senderInfo[0].trim()),1);
-    twlidsplit.splice(twlnick.indexOf(senderInfo[0].trim()),1);
-    twlnicksplit.splice(twlnick.indexOf(senderInfo[0].trim()),1);
+  if(testtwlnicktxt.split(", ").indexOf(senderInfo[0].trim()) != -1){
+    File.save("/storage/emulated/0/BeeBot/testtwlreply.txt", testtwlreplytxt.split(", ").splice(testtwlnicktxt.split(", ").indexOf(senderInfo[0].trim()),1).join(" "), false);
+    File.save("/storage/emulated/0/BeeBot/testtwlid.txt", testtwlidtxt.split(", ").splice(testtwlnicktxt.split(", ").indexOf(senderInfo[0].trim()),1).join(" "), false);
+    File.save("/storage/emulated/0/BeeBot/testtwlnick.txt", testtwlnicktxt.split(", ").splice(testtwlnicktxt.split(", ").indexOf(senderInfo[0].trim()),1).join(" "), false);
     replier.reply("방종 처리되었습니다!\n오늘도 수고하셨어요!");
 }else{
     replier.reply("방종 처리가 되지 않았어요!\n'마또리'에게 문의해주세요. :p");
 }
 }
 if(id[0] == "/생방송4"){
-    var twlreplytxt = File.read("/storage/emulated/0/BeeBot/twlreply.txt");
-    var twlnicktxt = File.read("/storage/emulated/0/BeeBot/twlnick.txt");
-    var twlidtxt = File.read("/storage/emulated/0/BeeBot/twlid.txt");
-
-    var twlreplysplit = twlreplytxt.split(" ");
-    var twlnicksplit = twlnicktxt.split(" ");
-    var twlidsplit = twlidtxt.split(" ");
-
-    while(twlreplysplit.length > 0 ){
-    twlreplysplit.pop();
-    }for(var i=0; i < twlnicksplit.length; i++){
-    twlreplysplit.push("\n" + twlnicksplit[i] + " 님\n링크: " + "twitch.tv/" + twlsplitid[i] + blank);
-    }
-    replier.reply("[Bee Bot] 생방송 목록", twlreplysplit.join());
+    replier.reply("[Bee Bot] 생방송 목록", File.read("/storage/emulated/0/BeeBot/testtwlreply.txt");
     Utils.compress();
-    File.save("/storage/emulated/0/BeeBot/twlreply.txt", twlreplysplit.join(),false);
     }
 }
 }
